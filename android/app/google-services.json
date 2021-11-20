@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "324444149533",
+    "project_id": "folaji-f4ef4",
+    "storage_bucket": "folaji-f4ef4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:324444149533:android:2f358a2fac6ece8099f3f4",
+        "android_client_info": {
+          "package_name": "com.joseph.cleanerapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "324444149533-jti8tloo8dg3jp654c8lp36sb3mf34fb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUR6SwgN0c8qJLLkbjp3URCIfQZTO1WZk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "324444149533-jti8tloo8dg3jp654c8lp36sb3mf34fb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
