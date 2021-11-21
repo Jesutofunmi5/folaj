@@ -20,7 +20,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Color(0xff000093),
-        title: Text('Laundry Services History'),
+        title: Text('Services History'),
         leading: IconButton(
           onPressed: (){
             Navigator.pop(context);

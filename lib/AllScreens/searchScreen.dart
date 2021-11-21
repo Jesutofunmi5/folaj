@@ -30,9 +30,11 @@ class _SearchScreenState extends State<SearchScreen> {
         : "PickUp Address";
        pickUpTextEditing.text = placeAddress;
 
-         dropOffTextEditing.text ="Johnson Awe Street Oluyole, Behind Wema Bank Apata, Ibadan";
+         dropOffTextEditing.text ="Behind Wema Bank Apata, Ibadan";
         // dropOffTextEditing.text == null ? dropOffTextEditing.text: "Johnson Awe Street Oluloye, Wema Bank Apata,Ibadan";
-
+   setState(() {
+     findPlace(dropOffTextEditing.text);
+   });
 
 
     return Scaffold(
@@ -125,7 +127,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             padding: EdgeInsets.all(3.0),
                             child: TextField(
                               onChanged: (val){
-                                val="Johnson Awe Street Oluyole, Behind Wema Bank Apata, Ibadan";
+                               // val="Johnson Awe Street Oluyole, Behind Wema Bank Apata, Ibadan";
                                  findPlace(val);
                               },
 
@@ -133,6 +135,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               decoration:InputDecoration(
                                   hintText: "Search Laundry Location",
                                   fillColor: Colors.grey[400],
+                                  enabled: false,
                                   filled: true,
                                   border: InputBorder.none,
                                   isDense: true,
@@ -183,7 +186,7 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
             SizedBox(height: 12.0,),
             //Tile coding
-              (placePredictionList.length >= 0)
+              (placePredictionList.length > 0)
                 ?Padding(
                 padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 child: ListView.separated(
@@ -199,7 +202,21 @@ class _SearchScreenState extends State<SearchScreen> {
                   physics: ClampingScrollPhysics(),
                 ),
               )
-                :Container(),
+              :Padding(
+                padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: ListView.separated(
+                  padding: EdgeInsets.all(0.0),
+                  itemBuilder: ( context, index){
+                    return PredictionTile(placePredictions: placePredictionList[index],);
+
+
+                  },
+                  separatorBuilder: (BuildContext context, int index) => DividerWidget(),
+                  itemCount: placePredictionList.length,
+                  shrinkWrap: true,
+                  physics: ClampingScrollPhysics(),
+                ),
+              ),
 
           ],
         ),
@@ -210,7 +227,6 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void findPlace (String placeName) async
   {
-    placeName = "Johnson Awe Street Oluyole, Behind Wema Bank Apata, Ibadan";
     if(placeName.length > 1)
       {
         String autoCompleteUrl = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$placeName&types=establishment&key=$mapKey&components=country:ng";

@@ -29,7 +29,7 @@ class HistoryItem extends StatelessWidget
                     Expanded(child: Container(child: Text(history.pickup, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18),))),
                     SizedBox(width: 5,),
 
-                    Text(  history.status != null ? history.status: "waiting" , style: TextStyle(fontFamily: 'Brand Bold', fontSize: 16, color: Colors.black87),),
+                    Text(  history.status != null ? history.status: "waiting", style: TextStyle(fontFamily: 'Brand Bold', fontSize: 16, color: Colors.black87),),
                   ],
                 ),
               ),
@@ -48,7 +48,7 @@ class HistoryItem extends StatelessWidget
 
               SizedBox(height: 15,),
 
-              Text(AssistantMethods.formatTripDate(history.createdAt), style: TextStyle(color: Colors.grey),),
+              Text(AssistantMethods.formatTripDate(history.createdAt), style: TextStyle(color: Color(0xff000093),),),
             ],
           ),
         ],

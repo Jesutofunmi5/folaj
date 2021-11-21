@@ -262,7 +262,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin
   {
     setState(() {
       drawerOpen = true;
-    searchContainerHeight = 300;
+     searchContainerHeight = 300;
     rideDetailsContainer = 0;
     bottomPaddingOfMap = 230.0;
     requestRideDetailsContainer =0;
@@ -271,6 +271,15 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin
     marketSet.clear();
     circleSet.clear();
     pLineCoordinates.clear();
+
+
+      Statusride = "";
+      cleaner_name = "";
+      cleaner_phone = "";
+      rideStatus = "Laundry is Coming";
+      driverDetailsContainer = 0.0;
+    
+    
 
     });
 
@@ -590,7 +599,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin
 
                                 Icon(Icons.search, color: Colors.blueAccent,),
                                 SizedBox(width: 10.0,),
-                                Text("Search For Folaj Dry Cleaning Office",
+                                Text("Search Folaj Laundry Office to make a request",
                                   style: TextStyle(fontSize: 12),)
                               ],
                             ),
@@ -912,7 +921,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text("Laundry is Coming", textAlign: TextAlign.center, style: TextStyle(fontSize: 20, fontFamily: "Brand-Bold"),),
+                            Text(rideStatus, textAlign: TextAlign.center, style: TextStyle(fontSize: 20, fontFamily: "Brand-Bold"),),
                           ],
                         ),
                         SizedBox(height: 22.0,),
