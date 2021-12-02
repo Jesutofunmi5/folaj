@@ -6,6 +6,7 @@ import 'package:rider_app/AllScreens/mainscreen.dart';
 import 'package:rider_app/AllScreens/login.dart';
 import 'package:rider_app/AllScreens/registration.dart';
 import 'package:provider/provider.dart';
+import 'package:rider_app/AllScreens/resetpassword.dart';
 import 'package:rider_app/DataHandler/appData.dart';
 
 void main() async {
@@ -39,7 +40,8 @@ class MyApp extends StatelessWidget {
         routes: {
           RegistrationScreen.idScreen :(context) => RegistrationScreen(),
           LoginScreen.idScreen:(context) => LoginScreen(),
-          MainScreen.idScreen :(context) => MainScreen()
+          MainScreen.idScreen :(context) => MainScreen(),
+          ResetPasswordScreen.idScreen:(context) => ResetPasswordScreen(),
         },
         debugShowCheckedModeBanner: false,
       ),

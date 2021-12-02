@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:rider_app/AllScreens/mainscreen.dart';
 import 'package:rider_app/AllScreens/registration.dart';
+import 'package:rider_app/AllScreens/resetpassword.dart';
 import 'package:rider_app/main.dart';
 import 'package:rider_app/AllWidget/progressDialog.dart';
 
@@ -20,7 +21,7 @@ TextEditingController passwordTextEditingController = TextEditingController();
           padding:  EdgeInsets.all(8.0),
           child: Column(
             children: [
-              SizedBox(height: 60.0,),
+              SizedBox(height: 80.0,),
               Image(image: AssetImage('images/bg.png'),
                 height: 150.0,
                 width: 250.0,
@@ -76,7 +77,17 @@ TextEditingController passwordTextEditingController = TextEditingController();
                       ),
                     ),
 
-                    SizedBox(height: 20.0,),
+                    SizedBox(height: 15.0,),
+
+
+                    FlatButton(
+                      onPressed: (){
+                        Navigator.pushNamedAndRemoveUntil(context, ResetPasswordScreen.idScreen, (route) => false);
+                      },
+                      child: Text("                                 Reset Password ?"),
+                    ),
+
+                    SizedBox(height: 20,),
 
                     RaisedButton(
                       color: Color(0xff000093),
