@@ -1,63 +1,88 @@
 import 'package:flutter/material.dart';
-import 'package:rider_app/AllScreens/mainscreen.dart';
 
-class AboutScreen extends StatefulWidget
-{
-  static const String idScreen = "about";
+class AboutScreen extends StatefulWidget {
+  static const String idScreen = "AboutScreen";
 
   @override
   _MyAboutScreenState createState() => _MyAboutScreenState();
 }
 
 class _MyAboutScreenState extends State<AboutScreen> {
+  static const String idScreen = "MyAboutScreen";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        body: ListView(
-          children: <Widget>[
+      appBar: AppBar(
+        backgroundColor: Color(0xfff5591f),
+      ),
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
             Container(
-              height: 220,
+              height: 300,
+              decoration: BoxDecoration(
+                  borderRadius:
+                      BorderRadius.only(bottomRight: Radius.circular(90)),
+                  color: Color(0xfff5591f),
+                  gradient: LinearGradient(
+                    colors: [(Color(0xfff5591f)), (Color(0xfff2861e))],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  )),
               child: Center(
-                child: Image.asset('images/bg.png', height: 150, width: 200,),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 30, left: 24, right: 24),
-              child: Column(
-                children: <Widget>[
-                  Text(
-                    'Folaj Laundry',
-                    style: TextStyle(
-                        fontSize: 90, fontFamily: 'Signatra'),
-                  ),
-                  SizedBox(height: 30),
-                  Text(
-                      'This app has been developed by Folaji, '
-                          'Co-founder of Folaj Laundry. This app offer easy asses to Folaj Laundry at cheap rates, '
-                          'and that\'s why 10M+ people already use this app',
-                    style: TextStyle(fontFamily: "Brand-Bold"),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            ),
-
-            SizedBox(height: 40),
-            FlatButton(
-                onPressed: () {
-                  Navigator.pushNamedAndRemoveUntil(context, MainScreen.idScreen, (route) => false);
-                },
-                child: const Text(
-                    'Go Back',
-                    style: TextStyle(
-                        fontSize: 18, color: Colors.black
-                    )
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(top: 50),
+                      child: Image.asset("assets/images/small.png"),
+                      height: 150,
+                      width: double.infinity,
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(left: 20, top: 20),
+                      alignment: Alignment.bottomLeft,
+                      child: Text(
+                        "About",
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                shape: RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(10.0))
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.only(top: 20),
+              alignment: Alignment.topCenter,
+              child: Text("FOLAJ LAUNDRY.",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orange[600],
+                  )),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Container(
+              margin: const EdgeInsets.all(15.0),
+              alignment: Alignment.topCenter,
+              child: Text(
+                  "Folaj Laundry is a leading commercial laundry service that offers commercial pickup & delivery. We offer premium commercial laundry services that are quicker, cleaner, and more affordable. Our team goes the distance to ensure that you have professional end-to-end commercial laundering services you can trust.",
+                  style: TextStyle(
+                    fontFamily: 'RobotoMono',
+                    fontSize: 17,
+                    color: Colors.black,
+                  )),
             ),
           ],
-        ));
+        ),
+      ),
+    );
   }
 }

@@ -1,4 +1,4 @@
-package com.muhammadali.rider_app
+package com.example.folaj_admin
 
 import io.flutter.embedding.android.FlutterActivity
 
