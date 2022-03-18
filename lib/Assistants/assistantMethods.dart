@@ -18,201 +18,187 @@ import 'package:rider_app/main.dart';
 import 'package:intl/intl.dart';
 
 class AssistantMethods {
+  static Future<String> searchCoordinateAddress(
+      Position position, context) async {
+    String placeAddress = "";
+    String url =
+        "https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude},${position.longitude}&key=$mapKey";
+    String st1, st2, st3, st4;
+    var response = await RequestAssistant.getRequest(url);
 
-   static Future<String> searchCoordinateAddress( Position position, context) async
+    if (response != "failed") {
+      // placeAddress = response["results"][0]["formatted_address"];
 
-   {
-         String placeAddress ="";
-         String url ="https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude},${position.longitude}&key=$mapKey";
-         String st1, st2, st3, st4;
-         var response = await RequestAssistant.getRequest(url);
+      st1 = response["results"][0]["address_components"][0]["long_name"];
+      st2 = response["results"][0]["address_components"][1]["long_name"];
+      st3 = response["results"][0]["address_components"][2]["long_name"];
+      st4 = response["results"][0]["address_components"][3]["long_name"];
 
-         if(response != "failed")
+      placeAddress = st1 + ", " + st2 + "," + st3 + " ," + st4;
 
-           {
-               // placeAddress = response["results"][0]["formatted_address"];
+      Address userPickUpAddress = new Address();
 
-             st1 = response["results"][0]["address_components"][0]["long_name"];
-             st2 = response["results"][0]["address_components"][1]["long_name"];
-             st3 = response["results"][0]["address_components"][2]["long_name"];
-             st4 = response["results"][0]["address_components"][3]["long_name"];
+      userPickUpAddress.latitude = position.latitude;
+      userPickUpAddress.longitude = position.longitude;
+      userPickUpAddress.placeName = placeAddress;
 
-             placeAddress =  st1 + ", " + st2 +"," + st3 + " ," + st4;
+      Provider.of<AppData>(context, listen: false)
+          .updatePickUpLocationAddress(userPickUpAddress);
+    }
 
+    return placeAddress;
+  }
 
-             Address userPickUpAddress = new Address();
+  static Future<DirectionDetails> obtainPlaceDirectionDetails(
+      LatLng initialPosition, LatLng finalPosition) async {
+    String directionUrl =
+        "https://maps.googleapis.com/maps/api/directions/json?destination=${finalPosition.latitude},${finalPosition.longitude}&origin=${initialPosition.latitude},${initialPosition.longitude}&key=$mapKey";
 
-             userPickUpAddress.latitude = position.latitude;
-             userPickUpAddress.longitude = position.longitude;
-             userPickUpAddress.placeName= placeAddress;
+    var res = await RequestAssistant.getRequest(directionUrl);
 
-             Provider.of<AppData>(context, listen: false).updatePickUpLocationAddress(userPickUpAddress);
-           }
+    if (res == "failed") {
+      return null;
+    }
 
-         return placeAddress;
-   }
+    DirectionDetails directionDetails = DirectionDetails();
 
-   static Future<DirectionDetails> obtainPlaceDirectionDetails( LatLng initialPosition, LatLng finalPosition ) async
-   {
-        String directionUrl = "https://maps.googleapis.com/maps/api/directions/json?destination=${finalPosition.latitude},${finalPosition.longitude}&origin=${initialPosition.latitude},${initialPosition.longitude}&key=$mapKey";
+    directionDetails.encodedPoint =
+        res["routes"][0]["overview_polyline"]["points"];
 
-        var res = await RequestAssistant.getRequest(directionUrl);
+    directionDetails.distanceText =
+        res["routes"][0]["legs"][0]["distance"]["text"];
+    directionDetails.distanceValue =
+        res["routes"][0]["legs"][0]["distance"]["value"];
 
-        if( res == "failed")
-          {
-                 return null;
-          }
+    directionDetails.durationText =
+        res["routes"][0]["legs"][0]["duration"]["text"];
+    directionDetails.durationValue =
+        res["routes"][0]["legs"][0]["duration"]["value"];
 
-        DirectionDetails directionDetails = DirectionDetails();
+    return directionDetails;
+  }
 
-           directionDetails.encodedPoint =res["routes"][0]["overview_polyline"]["points"];
+  static int calculateFares(DirectionDetails directionDetails) {
+    double timeTraveledFare = (directionDetails.durationValue / 60) * 0.20;
+    double distanceTraveledFare =
+        (directionDetails.distanceValue / 1000) * 0.20;
 
-           directionDetails.distanceText =res["routes"][0]["legs"][0]["distance"]["text"];
-           directionDetails.distanceValue =res["routes"][0]["legs"][0]["distance"]["value"];
+    double totalFareAmount = timeTraveledFare + distanceTraveledFare;
 
+    //Local Currency
+    double totalAmountLocal = totalFareAmount * 410;
 
-        directionDetails.durationText =res["routes"][0]["legs"][0]["duration"]["text"];
-        directionDetails.durationValue =res["routes"][0]["legs"][0]["duration"]["value"];
+    return totalAmountLocal.truncate();
+  }
 
-        return directionDetails;
+  static void getCurrentOnlineUserInfo() async {
+    newUser = await FirebaseAuth.instance.currentUser;
+    String userId = newUser.uid;
+    DatabaseReference reference =
+        FirebaseDatabase.instance.reference().child("users").child(userId);
 
-   }
+    reference.once().then((DataSnapshot dataSnapshot) {
+      if (dataSnapshot.value != null) {
+        currentUserInfo = Users.fromSnapshot(dataSnapshot);
+      }
+    });
+  }
 
-   static int calculateFares( DirectionDetails directionDetails)
-   {
-     double timeTraveledFare = (directionDetails.durationValue / 60) * 0.20;
-     double distanceTraveledFare = (directionDetails.distanceValue / 1000) * 0.20;
+  static double createRandomNumber(int num) {
+    var random = Random();
 
-     double totalFareAmount = timeTraveledFare + distanceTraveledFare ;
+    int randNumber = random.nextInt(num);
+    return randNumber.toDouble();
+  }
 
-     //Local Currency
-     double totalAmountLocal = totalFareAmount * 410;
+  static sendNotification(String token, context, String ride_request_id) async {
+    var destination =
+        Provider.of<AppData>(context, listen: false).dropOffLocation;
+    Map<String, String> headerMap = {
+      'Content-Type': 'application/json',
+      'Authorization': serverKey,
+    };
 
-     return totalAmountLocal.truncate();
+    Map notificationMap = {
+      'body': 'Address, ${destination.placeName}',
+      'title': 'New Laundry Request',
+    };
 
-   }
+    Map dataMap = {
+      'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+      'id': '1',
+      'status': 'done',
+      'ride_request_id': ride_request_id,
+    };
 
-   static void getCurrentOnlineUserInfo() async
-   {
-      newUser = await FirebaseAuth.instance.currentUser;
-      String userId = newUser.uid;
-      DatabaseReference reference = FirebaseDatabase.instance.reference().child("users").child(userId);
+    Map sendNotificationMap = {
+      "notification": notificationMap,
+      "data": dataMap,
+      "priority": "high",
+      "to": token,
+    };
 
-      reference.once().then((DataSnapshot dataSnapshot)
-          {
-            if(dataSnapshot.value != null )
-            {
-              currentUserInfo = Users.fromSnapshot(dataSnapshot);
-            }
-          });
-   }
-
-   static double createRandomNumber(int num)
-   {
-     var random = Random();
-
-     int randNumber = random.nextInt(num);
-     return randNumber.toDouble();
-   }
-
-   static sendNotification(String token, context, String ride_request_id) async
-   {
-    var destination = Provider.of<AppData>(context, listen: false).dropOffLocation;
-     Map<String, String > headerMap =
-         {
-           'Content-Type': 'application/json',
-           'Authorization': serverKey,
-
-         };
-
-     Map notificationMap =
-         {
-           'body': 'Address, ${destination.placeName}',
-           'title': 'New Laundry Request' ,
-         };
-
-     Map dataMap =
-         {
-           'click_action' : 'FLUTTER_NOTIFICATION_CLICK',
-           'id' : '1',
-           'status' : 'done',
-           'ride_request_id' : ride_request_id,
-         };
-
-     Map sendNotificationMap =
-         {
-           "notification": notificationMap,
-           "data" : dataMap,
-           "priority": "high",
-           "to": token,
-         };
-
-       var url = Uri.parse('https://fcm.googleapis.com/fcm/send');
-     var res = await http.post(
-       url,
+    var url = Uri.parse('https://fcm.googleapis.com/fcm/send');
+    var res = await http.post(
+      url,
       headers: headerMap,
       body: jsonEncode(sendNotificationMap),
-
     );
+  }
 
-   }
+  static String formatTripDate(String date) {
+    DateTime dateTime = DateTime.parse(date);
+    String formattedDate =
+        "${DateFormat.MMMd().format(dateTime)}, ${DateFormat.y().format(dateTime)} - ${DateFormat.jm().format(dateTime)}";
 
+    return formattedDate;
+  }
 
+  static void retrieveHistoryInfo(context) {
+    //retrieve and display Trip History
+    rideRequestRef
+        .orderByChild("rider_name")
+        .once()
+        .then((DataSnapshot dataSnapshot) {
+      if (dataSnapshot.value != null) {
+        //update total number of trip counts to provider
+        Map<dynamic, dynamic> keys = dataSnapshot.value;
+        int tripCounter = keys.length;
+        Provider.of<AppData>(context, listen: false)
+            .updateTripsCounter(tripCounter);
 
+        //update trip keys to provider
+        List<String> tripHistoryKeys = [];
+        keys.forEach((key, value) {
+          tripHistoryKeys.add(key);
+        });
+        Provider.of<AppData>(context, listen: false)
+            .updateTripKeys(tripHistoryKeys);
+        obtainTripRequestsHistoryData(context);
+      }
+    });
+  }
 
-   static String formatTripDate(String date)
-   {
-     DateTime dateTime = DateTime.parse(date);
-     String formattedDate = "${DateFormat.MMMd().format(dateTime)}, ${DateFormat.y().format(dateTime)} - ${DateFormat.jm().format(dateTime)}";
+  static void obtainTripRequestsHistoryData(context) {
+    var keys = Provider.of<AppData>(context, listen: false).tripHistoryKeys;
 
-     return formattedDate;
-   }
-
-
-   static void retrieveHistoryInfo(context)
-   {
-     //retrieve and display Trip History
-     rideRequestRef.orderByChild("rider_name").once().then((DataSnapshot dataSnapshot)
-     {
-       if(dataSnapshot.value != null)
-       {
-         //update total number of trip counts to provider
-         Map<dynamic, dynamic> keys = dataSnapshot.value;
-         int tripCounter = keys.length;
-         Provider.of<AppData>(context, listen: false).updateTripsCounter(tripCounter);
-
-         //update trip keys to provider
-         List<String> tripHistoryKeys = [];
-         keys.forEach((key, value)
-         {
-           tripHistoryKeys.add(key);
-         });
-         Provider.of<AppData>(context, listen: false).updateTripKeys(tripHistoryKeys);
-         obtainTripRequestsHistoryData(context);
-       }
-     });
-   }
-   static void obtainTripRequestsHistoryData(context)
-   {
-     var keys = Provider.of<AppData>(context, listen: false).tripHistoryKeys;
-
-     for(String key in keys)
-     {
-       rideRequestRef.child(key).once().then((DataSnapshot snapshot) {
-         if(snapshot.value != null)
-         {
-           rideRequestRef.child(key).child("rider_name").once().then((DataSnapshot snap)
-           {
-             String name = snap.value.toString();
-             if(name == currentUserInfo.name)
-             {
-               var history = History.fromSnapshot(snapshot);
-               Provider.of<AppData>(context, listen: false).updateTripHistoryData(history);
-             }
-           });
-         }
-       });
-     }
-   }
-
+    for (String key in keys) {
+      rideRequestRef.child(key).once().then((DataSnapshot snapshot) {
+        if (snapshot.value != null) {
+          rideRequestRef
+              .child(key)
+              .child("rider_name")
+              .once()
+              .then((DataSnapshot snap) {
+            String name = snap.value.toString();
+            if (name == currentUserInfo.name) {
+              var history = History.fromSnapshot(snapshot);
+              Provider.of<AppData>(context, listen: false)
+                  .updateTripHistoryData(history);
+            }
+          });
+        }
+      });
+    }
+  }
 }
